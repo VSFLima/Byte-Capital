@@ -1,0 +1,32 @@
+/*
+  Importa a fonte 'Inter' do Google Fonts para ser usada em todo o painel de administração.
+  Manter a mesma fonte da aplicação do cliente cria uma identidade visual coesa.
+*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/*
+  Define estilos base para o corpo (body) da página do painel.
+*/
+body {
+    /* Define a fonte 'Inter' como a principal, com uma fonte sans-serif como alternativa. */
+    font-family: 'Inter', sans-serif;
+    
+    /* Adiciona um anti-aliasing para deixar as fontes mais suaves em alguns ecrãs. */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/*
+  Estilo específico para os inputs de seleção de cor.
+  Isto remove a borda padrão do seletor de cor para um visual mais limpo,
+  já que o Tailwind já aplica uma borda ao redor do input.
+*/
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 0.25rem; /* 4px */
+}
+

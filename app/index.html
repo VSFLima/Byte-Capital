@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Byte Capital</title>
+    <!-- Ligação para a nossa folha de estilos CSS -->
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    <!-- Carrega o Tailwind CSS a partir de um CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Biblioteca de Gráficos (Chart.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Container para os Píxeis de Marketing -->
+    <script id="marketing-pixels-container"></script>
+</head>
+<body class="bg-black text-white">
+
+    <!-- 
+      O contêiner principal da aplicação.
+      O JavaScript irá mostrar/esconder as secções 'page-login-register' e 'app-shell'
+      com base no estado de autenticação do utilizador.
+    -->
+    <div id="root" class="max-w-md mx-auto min-h-screen">
+
+        <!-- ====================================================================== -->
+        <!-- SECÇÃO DE LOGIN E REGISTO (Visível quando deslogado) -->
+        <!-- ====================================================================== -->
+        <div id="page-login-register">
+            <!-- PÁGINA DE LOGIN -->
+            <section id="page-login" class="page">
+                <!-- O conteúdo da página de login será injetado aqui pelo JS -->
+            </section>
+            <!-- PÁGINA DE REGISTO -->
+            <section id="page-register" class="page hidden">
+                <!-- O conteúdo da página de registo será injetado aqui pelo JS -->
+            </section>
+        </div>
+
+        <!-- ====================================================================== -->
+        <!-- SHELL DA APLICAÇÃO (Visível quando logado) -->
+        <!-- ====================================================================== -->
+        <div id="app-shell" class="hidden min-h-screen flex flex-col">
+            
+            <!-- CABEÇALHO SUPERIOR FIXO -->
+            <header id="main-header" class="p-4 sticky top-0 z-20 bg-black/80 backdrop-blur-sm border-b border-gray-800">
+                <!-- O conteúdo do cabeçalho (logo, nome, cotação, notificações) será injetado aqui pelo JS -->
+            </header>
+
+            <!-- CONTEÚDO PRINCIPAL (Flex-grow para ocupar o espaço) -->
+            <main id="app-main-content" class="flex-grow">
+                
+                <!-- PÁGINA DO DASHBOARD (INÍCIO) -->
+                <section id="page-dashboard" class="page p-4">
+                    <!-- O conteúdo do dashboard será injetado aqui pelo JS -->
+                </section>
+
+                <!-- PÁGINA DE OPERAÇÕES/INVESTIMENTOS -->
+                <section id="page-operations" class="page hidden p-4">
+                    <!-- O conteúdo da página de operações será injetado aqui pelo JS -->
+                </section>
+
+                <!-- PÁGINA DE SUPORTE -->
+                <section id="page-support" class="page hidden p-4">
+                     <!-- O conteúdo da página de suporte será injetado aqui pelo JS -->
+                </section>
+
+                <!-- PÁGINA DE INDICAÇÕES (Acedida pela navegação superior) -->
+                <section id="page-indications" class="page hidden p-4">
+                    <!-- O conteúdo da página de indicações será injetado aqui pelo JS -->
+                </section>
+
+                <!-- PÁGINA DE PERFIL (Acedida pela navegação superior) -->
+                <section id="page-profile" class="page hidden p-4">
+                    <!-- O conteúdo da página de perfil e KYC será injetado aqui pelo JS -->
+                </section>
+
+                 <!-- PÁGINA DE NOTIFICAÇÕES (Acedida pelo sino) -->
+                <section id="page-notifications" class="page hidden p-4">
+                    <!-- O conteúdo da página de notificações será injetado aqui pelo JS -->
+                </section>
+
+            </main>
+
+            <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA -->
+            <nav id="bottom-nav" class="sticky bottom-0 z-20 bg-black border-t border-gray-800">
+                <div class="flex justify-around max-w-md mx-auto">
+                    <!-- Link para Início -->
+                    <a href="#dashboard" class="nav-link flex flex-col items-center justify-center w-full py-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        <span class="text-xs">Início</span>
+                    </a>
+                    <!-- Link para Operações -->
+                    <a href="#operations" class="nav-link flex flex-col items-center justify-center w-full py-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 012-2h2a2 2 0 012 2v6m-7 1a1 1 0 01-1-1V8a1 1 0 011-1h1a1 1 0 011 1v11m0 0a1 1 0 001 1h1a1 1 0 001-1V8a1 1 0 00-1-1h-1a1 1 0 00-1 1v11m0 0h1"/></svg>
+                        <span class="text-xs">Operações</span>
+                    </a>
+                    <!-- Link para Suporte -->
+                    <a href="#support" class="nav-link flex flex-col items-center justify-center w-full py-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span class="text-xs">Suporte</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+    </div>
+
+    <!-- Script principal da aplicação -->
+    <script src="./assets/js/main.js" type="module"></script>
+
+</body>
+</html>

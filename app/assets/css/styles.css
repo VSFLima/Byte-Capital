@@ -1,0 +1,80 @@
+/*
+  Importa a fonte 'Inter' do Google Fonts para ser usada em todo o site.
+*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/*
+  :root é onde definimos as nossas variáveis CSS globais.
+  Estes são os valores PADRÃO inspirados no novo design AMOLED e Amarelo/Verde.
+  Eles serão substituídos dinamicamente pelo JavaScript com as cores que você
+  definir no painel de administração.
+*/
+:root {
+    /* Paleta de Cores AMOLED (Valores Padrão) */
+    --cor-fundo-principal: #000000;    /* Preto AMOLED */
+    --cor-fundo-cartao: #1A1A1A;     /* Cinza muito escuro para os cartões */
+    
+    --cor-primaria: #00E676;        /* Verde vibrante (inspirado no print) para ações principais */
+    --cor-primaria-hover: #00C866;  /* Verde mais escuro para o efeito hover */
+    
+    --cor-destaque: #FFD600;        /* Amarelo-dourado para bordas e destaques */
+    
+    --cor-texto-principal: #FFFFFF;   /* Branco puro */
+    --cor-texto-secundario: #757575;  /* Cinza para textos secundários e rótulos */
+
+    --cor-texto-positivo: #00E676;   /* Verde para lucros */
+    --cor-texto-negativo: #FF5252;   /* Vermelho para perdas */
+
+    --cor-borda: #2A2A2A;           /* Cor para bordas e divisórias subtis */
+}
+
+/*
+  Define estilos base para o corpo (body) da página.
+*/
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--cor-fundo-principal);
+    color: var(--cor-texto-principal);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/*
+  Estilos para as secções de página.
+  Por defeito, todas as páginas começam escondidas. O JavaScript irá mostrar a correta.
+*/
+.page {
+    display: none;
+}
+.page.active {
+    display: block;
+}
+
+/*
+  Estilos para os links da barra de navegação inferior.
+*/
+.nav-link {
+    transition: color 0.2s ease-in-out;
+    color: var(--cor-texto-secundario); /* Cor padrão para ícones inativos */
+}
+
+.nav-link.active {
+    color: var(--cor-primaria); /* Usa a cor primária dinâmica para o ícone ativo */
+}
+
+/*
+  Estilos para os separadores (Tabs) na secção de investimentos.
+*/
+.tab-link {
+    transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    color: var(--cor-texto-secundario);
+    border-bottom: 2px solid transparent;
+    padding-bottom: 0.5rem; /* 8px */
+    font-weight: 600; /* semibold */
+}
+
+.tab-link.active {
+    color: var(--cor-texto-principal);
+    border-bottom-color: var(--cor-primaria);
+}
+

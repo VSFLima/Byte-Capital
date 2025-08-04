@@ -7,9 +7,9 @@
     <link rel="stylesheet" href="./assets/css/panel.css">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-white">
+<body class="bg-black text-white">
 
-    <div class="container mx-auto p-4 md:p-8">
+    <div class="container mx-auto p-4 md:p-6">
 
         <!-- Cabeçalho do Painel -->
         <header class="flex justify-between items-center mb-8">
@@ -17,7 +17,10 @@
                 <h1 class="text-3xl font-bold">Painel de Administração</h1>
                 <p id="header-site-name" class="text-gray-400">Byte Capital</p>
             </div>
-            <button id="logout-btn" class="bg-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors">Sair</button>
+            <div class="flex items-center space-x-4">
+                 <a href="../app/index.html" id="go-to-app-btn" class="bg-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm">Ir para a Plataforma</a>
+                <button id="logout-btn" class="bg-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors text-sm">Sair</button>
+            </div>
         </header>
 
         <main class="space-y-8">
@@ -35,13 +38,13 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <h3 class="font-semibold mb-2">Depósitos a Aprovar</h3>
-                        <div id="pending-deposits" class="space-y-2 max-h-48 overflow-y-auto">
+                        <div id="pending-deposits" class="space-y-2 max-h-48 overflow-y-auto p-2 bg-gray-900 rounded-md">
                             <p class="text-gray-500 text-sm">Nenhum depósito pendente.</p>
                         </div>
                     </div>
                     <div>
                         <h3 class="font-semibold mb-2">Saques a Processar</h3>
-                        <div id="pending-withdrawals" class="space-y-2 max-h-48 overflow-y-auto">
+                        <div id="pending-withdrawals" class="space-y-2 max-h-48 overflow-y-auto p-2 bg-gray-900 rounded-md">
                              <p class="text-gray-500 text-sm">Nenhum saque pendente.</p>
                         </div>
                     </div>
@@ -52,7 +55,7 @@
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-xl font-bold mb-4">Personalização da Plataforma (White Label)</h2>
                 <form id="settings-form" class="space-y-6">
-                    <!-- Nome, Logo e Cores -->
+                    <!-- Nome e Logótipo -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="site-name" class="block text-sm font-medium text-gray-300">Nome do Site</label>
@@ -63,12 +66,16 @@
                             <textarea id="logo-svg" rows="3" class="w-full mt-1 px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg font-mono text-xs"></textarea>
                         </div>
                     </div>
+                    
+                    <!-- Paleta de Cores -->
+                    <h3 class="text-lg font-semibold pt-4 border-t border-gray-700">Paleta de Cores</h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div><label for="main-bg-color" class="block text-sm font-medium text-gray-300">Fundo Principal</label><input type="color" id="main-bg-color" class="w-full h-10 mt-1 p-1 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer"></div>
                         <div><label for="card-bg-color" class="block text-sm font-medium text-gray-300">Fundo dos Cartões</label><input type="color" id="card-bg-color" class="w-full h-10 mt-1 p-1 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer"></div>
                         <div><label for="primary-color" class="block text-sm font-medium text-gray-300">Cor Primária</label><input type="color" id="primary-color" class="w-full h-10 mt-1 p-1 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer"></div>
                         <div><label for="highlight-color" class="block text-sm font-medium text-gray-300">Cor Destaque</label><input type="color" id="highlight-color" class="w-full h-10 mt-1 p-1 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer"></div>
                     </div>
+
                      <!-- Links, PIX e Notificações -->
                     <h3 class="text-lg font-semibold pt-4 border-t border-gray-700">Configurações Gerais</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -76,7 +83,6 @@
                         <div><label for="telegram-link" class="block text-sm font-medium text-gray-300">Link do Telegram (Suporte)</label><input type="url" id="telegram-link" class="w-full mt-1 px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg"></div>
                         <div><label for="pix-key" class="block text-sm font-medium text-gray-300">Chave PIX (Depósitos)</label><input type="text" id="pix-key" class="w-full mt-1 px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg"></div>
                     </div>
-                    <!-- Configurações do Telegram -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div><label for="telegram-url" class="block text-sm font-medium text-gray-300">URL do Script PHP</label><input type="url" id="telegram-url" placeholder="https://seudominio.com/notificacoes/telegram.php" class="w-full mt-1 px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg"></div>
                         <div><label for="telegram-token" class="block text-sm font-medium text-gray-300">Token do Bot Telegram</label><input type="text" id="telegram-token" class="w-full mt-1 px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg"></div>
@@ -96,8 +102,24 @@
                 <p id="settings-message" class="text-green-500 text-sm mt-2 h-4"></p>
             </section>
             
-            <!-- Outras secções (Anúncios, Utilizadores) -->
-            <!-- ... (O resto do HTML do painel, como a gestão de utilizadores, permanece o mesmo) ... -->
+            <!-- Secção de Gestão de Utilizadores -->
+            <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-4">Gestão de Utilizadores</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-700">
+                        <thead class="bg-gray-700/50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Utilizador</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Saldos</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body" class="divide-y divide-gray-700">
+                            <tr><td colspan="3" class="px-6 py-4 text-center text-gray-500">A carregar utilizadores...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </main>
     </div>
     <script src="./assets/js/main-admin.js" type="module"></script>

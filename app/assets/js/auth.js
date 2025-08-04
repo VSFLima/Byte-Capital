@@ -44,9 +44,10 @@ async function registerUser(name, email, password, phone) {
             createdAt: serverTimestamp(),
             
             // Estrutura da Carteira
-            balanceBRL: 0,      // Saldo principal em Reais
-            referralBalance: 0, // Saldo de bónus de afiliados
-            wallet: {           // Mapa para guardar os saldos de criptomoedas
+            balanceBRL: 0,          // Saldo principal em Reais
+            pendingBalanceBRL: 0,   // Saldo de depósitos pendentes de aprovação
+            referralBalance: 0,     // Saldo de bónus de afiliados
+            wallet: {               // Mapa para guardar os saldos de criptomoedas
                 btc: 0,
                 eth: 0,
                 sol: 0

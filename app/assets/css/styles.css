@@ -41,7 +41,8 @@ body {
 
 /*
   Estilos para as secções de página.
-  Por defeito, todas as páginas começam escondidas. O JavaScript irá mostrar a correta.
+  Por defeito, todas as páginas começam com 'display: none'. O JavaScript irá mostrar a correta
+  adicionando a classe 'active'.
 */
 .page {
     display: none;

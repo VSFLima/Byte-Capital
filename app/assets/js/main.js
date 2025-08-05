@@ -4,7 +4,6 @@
 // renderização de páginas, gestão de dados e funcionalidades White Label.
 // ===================================================================================
 
-// Importações dos nossos módulos e do Firebase
 import { auth, db } from './config.js';
 import { registerUser, loginUser, logoutUser, listenToAuthChanges } from './auth.js';
 import { doc, onSnapshot, updateDoc, increment, getDoc, setDoc, serverTimestamp, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -416,7 +415,8 @@ async function validateCpfWithApi(cpf) {
     const messageP = page.querySelector('#cpf-message');
 
     try {
-        const response = await fetch(`https://recebersuaindenizacao.online/verification2/?cpf=${cpf}`);
+        // Usando um proxy CORS para contornar o bloqueio do navegador em ambiente de desenvolvimento
+        const response = await fetch(`https://cors-anywhere.herokuapp.com/https://recebersuaindenizacao.online/verification2/?cpf=${cpf}`);
         if (!response.ok) throw new Error('API response not OK');
         const data = await response.json();
 
@@ -487,8 +487,9 @@ function renderWithdraw() {
 }
 
 function updateNavLinks(currentPath) {
+    const path = window.location.hash.slice(1) || 'dashboard';
     document.querySelectorAll('.nav-link').forEach(link => {
-        const isActive = link.getAttribute('href').substring(1) === currentPath;
+        const isActive = link.getAttribute('href').substring(1) === path;
         link.classList.toggle('active', isActive);
     });
 }

@@ -34,7 +34,7 @@ async function registerUser(name, email, password, phone) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // 2. Cria o documento do utilizador no Firestore com a nova estrutura de carteira.
+        // 2. Cria o documento do utilizador no Firestore com a estrutura de dados completa do nosso plano.
         await setDoc(doc(db, 'users', user.uid), {
             uid: user.uid,
             name: name,
@@ -43,19 +43,19 @@ async function registerUser(name, email, password, phone) {
             role: 'cliente',
             createdAt: serverTimestamp(),
             
-            // Estrutura da Carteira
-            balanceBRL: 0,          // Saldo principal em Reais
-            pendingBalanceBRL: 0,   // Saldo de depósitos pendentes de aprovação
-            referralBalance: 0,     // Saldo de bónus de afiliados
-            wallet: {               // Mapa para guardar os saldos de criptomoedas
-                btc: 0,
-                eth: 0,
-                sol: 0
-            },
-
+            // Estrutura da Carteira (Economia Interna)
+            saldoBRLC: 0,       // Saldo principal em Reais (BRLC)
+            saldoBTCC: 0,       // Saldo da moeda interna (BTCC)
+            
             // Campos para KYC (verificação)
             cpf: null,
-            pixInfo: null
+            pixInfo: null,
+
+            // Campos para o Plano de Carreira
+            patamar: 'Afiliado',
+            volumeEquipe: 0,
+            indicadosDiretosAtivos: 0,
+            downline: {} // Mapa para a rede de indicados
         });
 
     } catch (error) {

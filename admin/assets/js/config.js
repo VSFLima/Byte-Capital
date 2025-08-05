@@ -1,3 +1,8 @@
+// ===================================================================================
+// ARQUIVO: config.js (Painel de Administração)
+// RESPONSABILIDADE: Centralizar a configuração do Firebase para o painel de admin.
+// ===================================================================================
+
 // Importa as funções de inicialização dos SDKs do Firebase que vamos precisar.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";

@@ -2,6 +2,7 @@
 // ARQUIVO: main-admin.js
 // RESPONSABILIDADE: Orquestrar todo o painel de administração, incluindo a proteção
 // da página, a exibição de dados e a gestão da plataforma e dos utilizadores.
+// VERSÃO: v7 - Final e Completa
 // ===================================================================================
 
 import { auth, db } from './config.js';

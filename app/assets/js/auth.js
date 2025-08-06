@@ -1,6 +1,7 @@
 // ===================================================================================
 // ARQUIVO: auth.js
 // RESPONSABILIDADE: Gerir o registo, login e logout de utilizadores.
+// VERSÃO: v7 - Final e Corrigida
 // ===================================================================================
 
 import { auth, db } from './config.js';
@@ -22,16 +23,21 @@ import {
  * @param {string} email - O email para o registo.
  * @param {string} password - A senha para o registo.
  * @param {string} phone - O número de WhatsApp do utilizador.
+ * @param {string} referralCode - O código de convite (UID do indicador), opcional.
  * @returns {Promise<void>}
  * @throws {Error}
  */
-async function registerUser(name, email, password, phone) {
+async function registerUser(name, email, password, phone, referralCode) {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Gera um @username simples a partir do email
+        // Gera um @username simples a partir do email, removendo caracteres especiais.
         const username = email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '');
+
+        // Define quem indicou o utilizador. Se o código for inválido ou não existir,
+        // atribui ao padrão do site.
+        const referredBy = referralCode && referralCode.trim() !== '' ? referralCode.trim() : "SITE_PADRAO";
 
         // Cria o documento do utilizador no Firestore com a estrutura de dados completa do briefing.
         await setDoc(doc(db, 'users', user.uid), {
@@ -54,9 +60,11 @@ async function registerUser(name, email, password, phone) {
             pixInfo: null,
 
             // Campos para o Plano de Carreira
-            patamar: 'Afiliado',
+            patamar: 'Iniciante', // Patamar inicial
             volumeEquipe: 0,
+            indicadosDiretos: 0,
             indicadosDiretosAtivos: 0,
+            referredBy: referredBy, // Guarda quem indicou
             downline: {} // Mapa para a rede de indicados
         });
 

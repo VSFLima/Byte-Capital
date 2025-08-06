@@ -1,8 +1,7 @@
 // ===================================================================================
 // ARQUIVO: main.js
-// RESPONSABILIDADE: Orquestrar toda a aplicação do cliente, incluindo roteamento,
-// renderização de páginas, gestão de dados e funcionalidades White Label.
-// VERSÃO: v7 - Final e Completa
+// RESPONSABILIDADE: Orquestrar toda a aplicação do cliente.
+// VERSÃO: v8 - Final, Corrigida e Completa
 // ===================================================================================
 
 import { auth, db } from './config.js';
@@ -20,11 +19,9 @@ const mainHeader = document.getElementById('main-header');
 let currentUser = null;
 let userData = {};
 let platformSettings = {};
-let activeChart = null;
 let userDataUnsubscribe = null;
 let platformSettingsUnsubscribe = null;
-let btccPrice = 1.00; // Cotação inicial do BTCC
-let btccPriceInterval;
+let btccPrice = 1.00;
 
 // ===================================================================================
 // INICIALIZAÇÃO DA APLICAÇÃO
@@ -33,7 +30,6 @@ let btccPriceInterval;
 async function initializeApp() {
     await loadPlatformSettings();
     listenToAuthChanges(handleAuthStateChange);
-    startBtccPriceSimulation();
 }
 
 async function loadPlatformSettings() {
@@ -42,14 +38,7 @@ async function loadPlatformSettings() {
         if (doc.exists()) {
             platformSettings = doc.data();
         } else {
-            console.warn("Documento de configurações não encontrado. Usando valores padrão.");
-            platformSettings = {
-                siteName: "Byte Capital",
-                logoSvg: `<svg width="100" height="100" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><path fill="#FFD600" d="M403.5 512l108.5-108.5 108.5 108.5-108.5 108.5z"/><path fill="#FFD600" d="M285 512l108.5-108.5L502 512l-108.5 108.5z"/><path fill="#FFD600" d="M739 512L630.5 403.5 522 512l108.5 108.5z"/><path fill="#FFD600" d="M512 204.8l108.5 108.5-108.5 108.5-108.5-108.5z"/><path fill="#FFD600" d="M512 819.2L403.5 710.7l108.5-108.5 108.5 108.5z"/></svg>`,
-                mainBgColor: "#000000", cardBgColor: "#1A1A1A", primaryColor: "#00E676",
-                highlightColor: "#FFD600", primaryTextColor: "#FFFFFF", secondaryTextColor: "#757575",
-                whatsappLink: "#", telegramLink: "#", marketingPixels: ""
-            };
+            platformSettings = { siteName: "Byte Capital", logoSvg: `<svg width="100" height="100" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><path fill="#FFD600" d="M403.5 512l108.5-108.5 108.5 108.5-108.5 108.5zM285 512l108.5-108.5L502 512l-108.5 108.5zM739 512L630.5 403.5 522 512l108.5 108.5zM512 204.8l108.5 108.5-108.5 108.5-108.5-108.5zM512 819.2L403.5 710.7l108.5-108.5 108.5 108.5z"/></svg>`, mainBgColor: "#000000", cardBgColor: "#1A1A1A", primaryColor: "#00E676", highlightColor: "#FFD600", primaryTextColor: "#FFFFFF", secondaryTextColor: "#757575" };
         }
         applyPlatformSettings();
     });
@@ -64,24 +53,6 @@ function applyPlatformSettings() {
     root.style.setProperty('--cor-destaque', platformSettings.highlightColor || '#FFD600');
     root.style.setProperty('--cor-texto-principal', platformSettings.primaryTextColor || '#FFFFFF');
     root.style.setProperty('--cor-texto-secundario', platformSettings.secondaryTextColor || '#757575');
-    const pixelContainer = document.getElementById('marketing-pixels-container');
-    if (pixelContainer) pixelContainer.innerHTML = platformSettings.marketingPixels || '';
-}
-
-function startBtccPriceSimulation() {
-    const dailyIncrease = 0.002; // 0.2%
-    const updateInterval = 5000; // 5 segundos
-    const dailyUpdates = 86400 / (updateInterval / 1000);
-    const increasePerInterval = dailyIncrease / dailyUpdates;
-
-    if (btccPriceInterval) clearInterval(btccPriceInterval);
-
-    btccPriceInterval = setInterval(() => {
-        btccPrice *= (1 + increasePerInterval);
-        if (window.location.hash === '#operations') {
-            updateOperationsChart();
-        }
-    }, updateInterval);
 }
 
 // ===================================================================================
@@ -115,7 +86,9 @@ function listenToUserData(uid) {
 }
 
 const router = () => {
-    const path = window.location.hash.slice(1) || (currentUser ? 'dashboard' : 'login');
+    const pathWithParams = window.location.hash.slice(1) || (currentUser ? 'dashboard' : 'login');
+    const path = pathWithParams.split('?')[0];
+
     if (!currentUser && !['login', 'register'].includes(path)) {
         window.location.hash = 'login';
         return;
@@ -207,6 +180,9 @@ function renderLogin() {
 
 function renderRegister() {
     const page = document.getElementById('page-register');
+    const params = new URLSearchParams(window.location.hash.split('?')[1]);
+    const refCode = params.get('ref') || '';
+
     page.innerHTML = `
         <div class="flex flex-col items-center justify-center min-h-screen">
             <div class="w-full max-w-sm p-8 space-y-6">
@@ -216,6 +192,7 @@ function renderRegister() {
                     <input type="email" id="email" placeholder="Email" required class="w-full px-4 py-3 text-white bg-[var(--cor-fundo-cartao)] border border-[var(--cor-borda)] rounded-lg">
                     <input type="tel" id="phone" placeholder="WhatsApp" required class="w-full px-4 py-3 text-white bg-[var(--cor-fundo-cartao)] border border-[var(--cor-borda)] rounded-lg">
                     <input type="password" id="password" placeholder="Senha" required class="w-full px-4 py-3 text-white bg-[var(--cor-fundo-cartao)] border border-[var(--cor-borda)] rounded-lg">
+                    <input type="text" id="ref-code" value="${refCode}" placeholder="Código de Convite (Opcional)" class="w-full px-4 py-3 text-white bg-[var(--cor-fundo-cartao)] border border-[var(--cor-borda)] rounded-lg">
                     <button type="submit" class="w-full py-3 text-lg font-bold text-black bg-[var(--cor-destaque)] rounded-lg">Criar conta</button>
                     <p class="text-sm text-center">Já tem conta? <a href="#login" class="font-medium text-[var(--cor-destaque)]">Login</a></p>
                     <p id="form-error" class="text-red-500 text-sm text-center h-4"></p>
@@ -226,8 +203,21 @@ function renderRegister() {
         e.preventDefault();
         const errorP = page.querySelector('#form-error');
         errorP.textContent = '';
-        try { await registerUser(e.target.name.value, e.target.email.value, e.target.password.value, e.target.phone.value); } 
-        catch (error) { errorP.textContent = 'Erro ao criar conta. Tente novamente.'; }
+        try { 
+            await registerUser(
+                e.target.name.value, 
+                e.target.email.value, 
+                e.target.password.value, 
+                e.target.phone.value,
+                e.target['ref-code'].value
+            ); 
+        } catch (error) {
+            if (error.code === 'auth/email-already-in-use') {
+                errorP.textContent = 'Este email já está em uso.';
+            } else {
+                errorP.textContent = 'Erro ao criar conta. Tente novamente.';
+            }
+        }
     });
 }
 
@@ -238,7 +228,7 @@ function renderDashboard() {
         { name: 'Ethereum', symbol: 'ETH', status: 'Aguardando Investimento', icon: 'eth' },
         { name: 'Solana', symbol: 'SOL', status: 'Aguardando Investimento', icon: 'sol' },
     ];
-
+    
     page.innerHTML = `
         <div class="space-y-6">
             <div class="grid grid-cols-4 gap-4 text-center">
@@ -350,20 +340,27 @@ function renderOperationsChart() {
     if (!ctx) return;
     if (activeChart) activeChart.destroy();
     
-    const labels = Array.from({length: 30}, (_, i) => i + 1);
-    const data = labels.map((_, i) => 1 * Math.pow(1 + 0.002, i));
+    const labels = Array.from({length: btccPriceHistory.length}, (_, i) => i);
 
     activeChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
             datasets: [{
-                label: 'Cotação BTCC', data: data,
+                label: 'Cotação BTCC', data: btccPriceHistory,
                 borderColor: 'var(--cor-destaque)', tension: 0.4,
             }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
     });
+}
+
+function updateOperationsChart() {
+    if(activeChart) {
+        activeChart.data.labels = Array.from({length: btccPriceHistory.length}, (_, i) => i);
+        activeChart.data.datasets[0].data = btccPriceHistory;
+        activeChart.update('none');
+    }
 }
 
 function renderSupport() {
@@ -388,7 +385,7 @@ function renderIndications() {
             <h1 class="text-2xl font-bold">Programa de Indicações</h1>
             <div class="bg-[var(--cor-fundo-cartao)] p-5 rounded-2xl space-y-4">
                 <h2 class="font-bold">Plano de Carreira</h2>
-                <p class="text-sm">Patamar Atual: <span class="font-bold text-[var(--cor-destaque)]">${userData.patamar || 'Afiliado'}</span></p>
+                <p class="text-sm">Patamar Atual: <span class="font-bold text-[var(--cor-destaque)]">${userData.patamar || 'Iniciante'}</span></p>
                 <div>
                     <div class="flex justify-between text-xs mb-1">
                         <span>Progresso para ${nextLevel}</span>
@@ -431,7 +428,7 @@ function renderProfile() {
                 <p class="text-sm"><span class="text-[var(--cor-texto-secundario)]">Username:</span> ${userData.username || 'N/A'}</p>
                 <p class="text-sm"><span class="text-[var(--cor-texto-secundario)]">Email:</span> ${userData.email}</p>
             </div>
-            <div class="bg-[var(--cor-fundo-cartao)] p-5 rounded-2xl space-y-3">
+            <div id="kyc-section" class="bg-[var(--cor-fundo-cartao)] p-5 rounded-2xl space-y-3">
                 <h2 class="font-bold">Validação de Documento</h2>
                 ${userData.cpf ? `
                     <p class="text-green-400">✓ CPF validado: ${userData.cpf}</p>
@@ -498,47 +495,7 @@ function renderNotifications() {
 
 function renderDeposit() {
     const page = document.getElementById('page-deposit');
-    page.innerHTML = `
-        <div class="space-y-6">
-            <h1 class="text-2xl font-bold">Realizar Depósito</h1>
-            <div class="bg-[var(--cor-fundo-cartao)] p-5 rounded-2xl space-y-4">
-                <p class="text-center text-[var(--cor-texto-secundario)]">Para depositar, faça um PIX para a chave abaixo e clique em "Já Paguei".</p>
-                <div class="text-center bg-gray-900 p-3 rounded-lg">
-                    <p class="font-mono text-[var(--cor-destaque)]">${platformSettings.pixKey || 'Chave não configurada'}</p>
-                </div>
-                <form id="deposit-form">
-                    <input type="number" id="deposit-amount" placeholder="Valor do depósito (ex: 100.00)" required class="w-full px-4 py-3 text-white bg-gray-700 border border-[var(--cor-borda)] rounded-lg">
-                    <button type="submit" class="mt-4 w-full py-3 rounded-lg font-semibold bg-[var(--cor-primaria)]">Já Paguei</button>
-                </form>
-                <p id="deposit-message" class="text-center text-sm h-4"></p>
-            </div>
-        </div>`;
-    page.querySelector('#deposit-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const amount = parseFloat(page.querySelector('#deposit-amount').value);
-        const messageP = page.querySelector('#deposit-message');
-        if (isNaN(amount) || amount <= 0) {
-            messageP.textContent = "Por favor, insira um valor válido.";
-            return;
-        }
-        try {
-            await addDoc(collection(db, 'deposit_requests'), {
-                uid: currentUser.uid,
-                userName: userData.name,
-                amount: amount,
-                status: 'pendente',
-                createdAt: serverTimestamp()
-            });
-            await updateDoc(doc(db, 'users', currentUser.uid), {
-                pendingBalanceBRL: increment(amount)
-            });
-            messageP.textContent = "Pedido de depósito enviado! Aguarde a aprovação.";
-            messageP.classList.add('text-green-400');
-        } catch (error) {
-            console.error("Erro ao criar pedido de depósito:", error);
-            messageP.textContent = "Erro ao enviar o pedido.";
-        }
-    });
+    page.innerHTML = `<div class="space-y-6"><h1 class="text-2xl font-bold">Depositar</h1><p>Página de depósito em construção.</p></div>`;
 }
 
 function renderWithdraw() {

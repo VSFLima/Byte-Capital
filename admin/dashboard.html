@@ -32,32 +32,13 @@
                 <div class="bg-gray-800 p-5 rounded-lg shadow-lg"><h2 class="text-gray-400 text-sm font-medium">Saldo Total (BTCC)</h2><p id="stats-total-btcc" class="text-3xl font-bold">0.00</p></div>
             </section>
 
-            <!-- Secção de Ações Pendentes -->
-            <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-bold mb-4">Ações Pendentes</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <h3 class="font-semibold mb-2">Depósitos a Aprovar</h3>
-                        <div id="pending-deposits" class="space-y-2 max-h-48 overflow-y-auto p-2 bg-gray-900 rounded-md">
-                            <p class="text-gray-500 text-sm">Nenhum depósito pendente.</p>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold mb-2">Saques a Processar</h3>
-                        <div id="pending-withdrawals" class="space-y-2 max-h-48 overflow-y-auto p-2 bg-gray-900 rounded-md">
-                             <p class="text-gray-500 text-sm">Nenhum saque pendente.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             <!-- Secção de Gestão de Ativos de Investimento -->
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-xl font-bold mb-4">Gestão de Ativos de Investimento</h2>
                 <form id="new-asset-form" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-                    <div class="md:col-span-2"><label for="asset-name" class="block text-sm">Nome do Ativo</label><input type="text" id="asset-name" placeholder="Ex: Bitcoin" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg"></div>
-                    <div><label for="asset-icon-url" class="block text-sm">URL do Ícone</label><input type="url" id="asset-icon-url" placeholder="https://site.com/btc.svg" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg"></div>
-                    <div><label for="asset-profit" class="block text-sm">Rendimento (%)</label><input type="number" id="asset-profit" placeholder="Ex: 1.5" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg"></div>
+                    <div class="md:col-span-2"><label for="asset-name" class="block text-sm">Nome do Ativo</label><input type="text" id="asset-name" placeholder="Ex: Plano Impulso" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg border border-gray-600"></div>
+                    <div><label for="asset-icon-url" class="block text-sm">URL do Ícone</label><input type="url" id="asset-icon-url" placeholder="https://site.com/btc.svg" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg border border-gray-600"></div>
+                    <div><label for="asset-profit" class="block text-sm">Rendimento Diário (%)</label><input type="number" step="0.1" id="asset-profit" placeholder="Ex: 1.5" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg border border-gray-600"></div>
                     <div><button type="submit" class="w-full bg-green-600 p-2 rounded-lg font-semibold">Adicionar Ativo</button></div>
                 </form>
                 <div id="investment-assets-container" class="mt-4 space-y-2">
@@ -70,21 +51,21 @@
                 <h2 class="text-xl font-bold mb-4">Personalização da Plataforma (White Label)</h2>
                 <form id="settings-form" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div><label for="site-name" class="block text-sm">Nome do Site</label><input type="text" id="site-name" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg"></div>
-                        <div><label for="logo-svg" class="block text-sm">Código SVG do Logótipo</label><textarea id="logo-svg" rows="2" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg font-mono text-xs"></textarea></div>
+                        <div><label for="site-name" class="block text-sm">Nome do Site</label><input type="text" id="site-name" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg border border-gray-600"></div>
+                        <div><label for="logo-svg" class="block text-sm">Código SVG do Logótipo</label><textarea id="logo-svg" rows="2" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg font-mono text-xs border border-gray-600"></textarea></div>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <div><label class="block text-sm">Fundo Principal</label><input type="color" id="main-bg-color" class="w-full h-10 mt-1 p-1 bg-gray-700 rounded-lg"></div>
-                        <div><label class="block text-sm">Fundo dos Cartões</label><input type="color" id="card-bg-color" class="w-full h-10 mt-1 p-1 bg-gray-700 rounded-lg"></div>
-                        <div><label class="block text-sm">Cor Primária</label><input type="color" id="primary-color" class="w-full h-10 mt-1 p-1 bg-gray-700 rounded-lg"></div>
-                        <div><label class="block text-sm">Cor Destaque</label><input type="color" id="highlight-color" class="w-full h-10 mt-1 p-1 bg-gray-700 rounded-lg"></div>
+                        <div><label class="block text-sm">Fundo Principal</label><input type="color" id="main-bg-color" class="w-full h-10 mt-1 p-1 bg-gray-700 rounded-lg border border-gray-600"></div>
+                        <div><label class="block text-sm">Fundo dos Cartões</label><input type="color" id="card-bg-color" class="w-full h-10 mt-1 p-1 bg-gray-700 rounded-lg border border-gray-600"></div>
+                        <div><label class="block text-sm">Cor Primária</label><input type="color" id="primary-color" class="w-full h-10 mt-1 p-1 bg-gray-700 rounded-lg border border-gray-600"></div>
+                        <div><label class="block text-sm">Cor Destaque</label><input type="color" id="highlight-color" class="w-full h-10 mt-1 p-1 bg-gray-700 rounded-lg border border-gray-600"></div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div><label class="block text-sm">Link do WhatsApp</label><input type="url" id="whatsapp-link" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg"></div>
-                        <div><label class="block text-sm">Link do Telegram</label><input type="url" id="telegram-link" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg"></div>
-                        <div><label class="block text-sm">Chave PIX</label><input type="text" id="pix-key" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg"></div>
+                        <div><label class="block text-sm">Link do WhatsApp</label><input type="url" id="whatsapp-link" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg border border-gray-600"></div>
+                        <div><label class="block text-sm">Link do Telegram</label><input type="url" id="telegram-link" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg border border-gray-600"></div>
+                        <div><label class="block text-sm">Chave PIX</label><input type="text" id="pix-key" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg border border-gray-600"></div>
                     </div>
-                    <div><label class="block text-sm">Píxeis de Marketing</label><textarea id="marketing-pixels" rows="3" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg font-mono text-xs"></textarea></div>
+                    <div><label class="block text-sm">Píxeis de Marketing</label><textarea id="marketing-pixels" rows="3" class="w-full mt-1 p-2 text-white bg-gray-700 rounded-lg font-mono text-xs border border-gray-600"></textarea></div>
                     <div class="text-right pt-4"><button type="submit" class="bg-purple-600 px-6 py-2 rounded-lg font-semibold">Guardar Configurações</button></div>
                 </form>
                 <p id="settings-message" class="text-green-500 text-sm mt-2 h-4"></p>

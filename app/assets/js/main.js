@@ -2,6 +2,7 @@
 // ARQUIVO: main.js
 // RESPONSABILIDADE: Orquestrar toda a aplicação do cliente, incluindo roteamento,
 // renderização de páginas, gestão de dados e funcionalidades White Label.
+// VERSÃO: v7 - Final e Completa
 // ===================================================================================
 
 import { auth, db } from './config.js';
@@ -22,6 +23,8 @@ let platformSettings = {};
 let activeChart = null;
 let userDataUnsubscribe = null;
 let platformSettingsUnsubscribe = null;
+let btccPrice = 1.00; // Cotação inicial do BTCC
+let btccPriceInterval;
 
 // ===================================================================================
 // INICIALIZAÇÃO DA APLICAÇÃO
@@ -30,6 +33,7 @@ let platformSettingsUnsubscribe = null;
 async function initializeApp() {
     await loadPlatformSettings();
     listenToAuthChanges(handleAuthStateChange);
+    startBtccPriceSimulation();
 }
 
 async function loadPlatformSettings() {
@@ -62,6 +66,22 @@ function applyPlatformSettings() {
     root.style.setProperty('--cor-texto-secundario', platformSettings.secondaryTextColor || '#757575');
     const pixelContainer = document.getElementById('marketing-pixels-container');
     if (pixelContainer) pixelContainer.innerHTML = platformSettings.marketingPixels || '';
+}
+
+function startBtccPriceSimulation() {
+    const dailyIncrease = 0.002; // 0.2%
+    const updateInterval = 5000; // 5 segundos
+    const dailyUpdates = 86400 / (updateInterval / 1000);
+    const increasePerInterval = dailyIncrease / dailyUpdates;
+
+    if (btccPriceInterval) clearInterval(btccPriceInterval);
+
+    btccPriceInterval = setInterval(() => {
+        btccPrice *= (1 + increasePerInterval);
+        if (window.location.hash === '#operations') {
+            updateOperationsChart();
+        }
+    }, updateInterval);
 }
 
 // ===================================================================================
@@ -126,7 +146,12 @@ const router = () => {
 // FUNÇÕES DE RENDERIZAÇÃO E LÓGICA DE UI
 // ===================================================================================
 
-const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+const formatCurrency = (value, currency = 'BRLC') => {
+    if (currency === 'BRLC') {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+    }
+    return `${(value || 0).toFixed(2)} BTCC`;
+};
 
 function showAuthPages() {
     loginRegisterContainer.classList.remove('hidden');
@@ -213,11 +238,6 @@ function renderDashboard() {
         { name: 'Ethereum', symbol: 'ETH', status: 'Aguardando Investimento', icon: 'eth' },
         { name: 'Solana', symbol: 'SOL', status: 'Aguardando Investimento', icon: 'sol' },
     ];
-    const pendingBalanceHTML = userData.pendingBalanceBRL > 0 ? `
-        <div class="flex justify-between items-center text-sm text-yellow-400">
-            <span>Aguardando análise</span>
-            <span>${formatCurrency(userData.pendingBalanceBRL)}</span>
-        </div>` : '';
 
     page.innerHTML = `
         <div class="space-y-6">
@@ -229,10 +249,9 @@ function renderDashboard() {
             </div>
             <div class="bg-[var(--cor-fundo-cartao)] p-5 rounded-2xl space-y-4">
                 <div class="flex justify-between">
-                    <div><p class="text-sm text-[var(--cor-texto-secundario)]">Saldo</p><p class="text-2xl font-bold">${formatCurrency(userData.balanceBRL)}</p></div>
-                    <div><p class="text-sm text-[var(--cor-texto-secundario)]">Saldo para saque</p><p class="text-2xl font-bold">${formatCurrency(userData.balanceBRL)}</p></div>
+                    <div><p class="text-sm text-[var(--cor-texto-secundario)]">Saldo (BRLC)</p><p class="text-2xl font-bold">${formatCurrency(userData.saldoBRLC, 'BRLC')}</p></div>
+                    <div><p class="text-sm text-[var(--cor-texto-secundario)]">Saldo (BTCC)</p><p class="text-2xl font-bold">${formatCurrency(userData.saldoBTCC, 'BTCC')}</p></div>
                 </div>
-                ${pendingBalanceHTML}
                 <div><p class="text-sm text-[var(--cor-texto-secundario)]">Total investido</p><p class="text-2xl font-bold">${formatCurrency(0)}</p></div>
                 <div class="grid grid-cols-2 gap-4 pt-2">
                     <a href="#deposit" class="w-full py-3 rounded-lg font-semibold text-center bg-gradient-to-r from-[var(--cor-primaria)] to-green-400">Depositar</a>
@@ -284,7 +303,7 @@ function renderInvestmentModal(assetName) {
         });
     });
 
-    modal.querySelector('#invest-now-btn').addEventListener('click', () => {
+    modal.querySelector('#invest-now-btn').addEventListener('click', async () => {
         const amount = parseFloat(investAmountInput.value);
         const errorP = modal.querySelector('#modal-error');
         errorP.textContent = '';
@@ -292,7 +311,7 @@ function renderInvestmentModal(assetName) {
             errorP.textContent = "Valor mínimo é R$ 10,00.";
             return;
         }
-        if (userData.balanceBRL < amount) {
+        if (userData.saldoBRLC < amount) {
             errorP.innerHTML = `Saldo insuficiente. <a href="#deposit" id="go-to-deposit" class="underline">Depositar</a>`;
             modal.querySelector('#go-to-deposit').addEventListener('click', (e) => {
                 e.preventDefault();
@@ -301,19 +320,27 @@ function renderInvestmentModal(assetName) {
             });
             return;
         }
-        alert(`Investimento de ${formatCurrency(amount)} em ${assetName} realizado com sucesso! (Simulação)`);
-        closeModal();
+        try {
+            await updateDoc(doc(db, 'users', currentUser.uid), {
+                saldoBRLC: increment(-amount)
+            });
+            alert(`Investimento de ${formatCurrency(amount, 'BRLC')} em ${assetName} realizado com sucesso!`);
+            closeModal();
+        } catch (error) {
+            console.error("Erro ao investir:", error);
+            errorP.textContent = "Erro ao processar o investimento.";
+        }
     });
 }
 
 function renderOperations() {
     const page = document.getElementById('page-operations');
     page.innerHTML = `<div class="space-y-6">
-        <h1 class="text-2xl font-bold">Operações</h1>
+        <h1 class="text-2xl font-bold">Cotação BTCC</h1>
         <div class="bg-[var(--cor-fundo-cartao)] p-4 rounded-2xl h-64">
             <canvas id="operations-chart"></canvas>
         </div>
-        <div class="text-center text-[var(--cor-texto-secundario)]">Nenhuma operação encontrada.</div>
+        <div class="text-center text-[var(--cor-texto-secundario)]">Histórico de transações em tempo real (simulado).</div>
     </div>`;
     renderOperationsChart();
 }
@@ -322,12 +349,16 @@ function renderOperationsChart() {
     const ctx = document.getElementById('operations-chart')?.getContext('2d');
     if (!ctx) return;
     if (activeChart) activeChart.destroy();
+    
+    const labels = Array.from({length: 30}, (_, i) => i + 1);
+    const data = labels.map((_, i) => 1 * Math.pow(1 + 0.002, i));
+
     activeChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+            labels: labels,
             datasets: [{
-                label: 'Performance', data: [100, 120, 110, 140, 130, 150],
+                label: 'Cotação BTCC', data: data,
                 borderColor: 'var(--cor-destaque)', tension: 0.4,
             }]
         },
@@ -347,19 +378,28 @@ function renderSupport() {
 
 function renderIndications() {
     const page = document.getElementById('page-indications');
+    const nextLevel = "Bronze";
+    const currentAffiliates = userData.indicadosDiretosAtivos || 0;
+    const requiredAffiliates = 10;
+    const progress = (currentAffiliates / requiredAffiliates) * 100;
+
     page.innerHTML = `
         <div class="space-y-6">
             <h1 class="text-2xl font-bold">Programa de Indicações</h1>
-            <div class="bg-[var(--cor-fundo-cartao)] p-5 rounded-2xl text-center space-y-2">
-                <p class="text-lg">Convide amigos e ganhe <span class="font-bold text-[var(--cor-destaque)]">R$ 20,00</span> por cada indicação!</p>
-            </div>
-            <div class="bg-[var(--cor-fundo-cartao)] p-5 rounded-2xl">
-                <div class="flex justify-between items-center">
-                    <div><p class="text-sm text-[var(--cor-texto-secundario)]">Carteira de Comissão</p><p class="text-2xl font-bold">${formatCurrency(userData.referralBalance)}</p></div>
-                    <button id="withdraw-commission-btn" class="font-semibold text-[var(--cor-primaria)]">Sacar</button>
+            <div class="bg-[var(--cor-fundo-cartao)] p-5 rounded-2xl space-y-4">
+                <h2 class="font-bold">Plano de Carreira</h2>
+                <p class="text-sm">Patamar Atual: <span class="font-bold text-[var(--cor-destaque)]">${userData.patamar || 'Afiliado'}</span></p>
+                <div>
+                    <div class="flex justify-between text-xs mb-1">
+                        <span>Progresso para ${nextLevel}</span>
+                        <span>${currentAffiliates} / ${requiredAffiliates}</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2.5">
+                        <div class="bg-[var(--cor-primaria)] h-2.5 rounded-full" style="width: ${progress}%"></div>
+                    </div>
                 </div>
             </div>
-             <div class="bg-[var(--cor-fundo-cartao)] p-4 rounded-2xl">
+            <div class="bg-[var(--cor-fundo-cartao)] p-4 rounded-2xl">
                 <p class="text-sm text-[var(--cor-texto-secundario)] mb-2">O seu link de indicação</p>
                 <div class="flex items-center bg-gray-900 p-2 rounded-lg">
                     <input id="ref-link-input" type="text" readonly value="${window.location.origin}${window.location.pathname}#register?ref=${currentUser.uid}" class="bg-transparent w-full text-white focus:outline-none text-sm">
@@ -388,47 +428,67 @@ function renderProfile() {
             <div class="bg-[var(--cor-fundo-cartao)] p-5 rounded-2xl space-y-3">
                 <h2 class="font-bold">Informações Pessoais</h2>
                 <p class="text-sm"><span class="text-[var(--cor-texto-secundario)]">Nome:</span> ${userData.name}</p>
+                <p class="text-sm"><span class="text-[var(--cor-texto-secundario)]">Username:</span> ${userData.username || 'N/A'}</p>
                 <p class="text-sm"><span class="text-[var(--cor-texto-secundario)]">Email:</span> ${userData.email}</p>
-                <p class="text-sm"><span class="text-[var(--cor-texto-secundario)]">Chave Pix:</span> ${userData.pixInfo ? 'Cadastrada' : 'Não informada'}</p>
             </div>
             <div class="bg-[var(--cor-fundo-cartao)] p-5 rounded-2xl space-y-3">
-                <h2 class="font-bold">Cadastrar CPF</h2>
-                <p class="text-xs text-[var(--cor-texto-secundario)]">Para receber os seus pagamentos, precisamos do seu CPF.</p>
-                <form id="cpf-form">
-                    <input type="text" id="cpf-input" placeholder="Digite seu CPF (apenas números)" class="w-full px-4 py-3 text-white bg-gray-700 border border-[var(--cor-borda)] rounded-lg">
-                    <button type="submit" class="mt-2 w-full py-2 rounded-lg font-semibold bg-[var(--cor-primaria)]">Validar CPF</button>
-                </form>
+                <h2 class="font-bold">Validação de Documento</h2>
+                ${userData.cpf ? `
+                    <p class="text-green-400">✓ CPF validado: ${userData.cpf}</p>
+                ` : `
+                    <p class="text-xs text-[var(--cor-texto-secundario)]">Para realizar saques, precisa de validar o seu CPF.</p>
+                    <form id="cpf-form">
+                        <input type="text" id="cpf-name-input" placeholder="O seu nome completo" required class="w-full px-4 py-3 mt-2 text-white bg-gray-700 border border-[var(--cor-borda)] rounded-lg">
+                        <input type="text" id="cpf-input" placeholder="Digite seu CPF (apenas números)" required class="w-full mt-2 px-4 py-3 text-white bg-gray-700 border border-[var(--cor-borda)] rounded-lg">
+                        <button type="submit" class="mt-2 w-full py-2 rounded-lg font-semibold bg-[var(--cor-primaria)]">Validar CPF</button>
+                    </form>
+                `}
             </div>
         </div>`;
     page.querySelector('#logout-btn').addEventListener('click', logoutUser);
-    page.querySelector('#cpf-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const cpf = page.querySelector('#cpf-input').value;
-        validateCpfWithApi(cpf);
-    });
+    if (!userData.cpf) {
+        page.querySelector('#cpf-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = page.querySelector('#cpf-name-input').value;
+            const cpf = page.querySelector('#cpf-input').value;
+            renderCpfConfirmationModal(name, cpf);
+        });
+    }
 }
 
-async function validateCpfWithApi(cpf) {
-    const page = document.getElementById('page-profile');
-    const form = page.querySelector('#cpf-form');
-    form.innerHTML += `<p id="cpf-message" class="text-center text-sm mt-2">A validar...</p>`;
-    const messageP = page.querySelector('#cpf-message');
+function renderCpfConfirmationModal(name, cpf) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/70 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-[var(--cor-fundo-cartao)] p-6 rounded-2xl w-11/12 max-w-sm space-y-4">
+            <h2 class="text-xl font-bold text-center">Confirmar Dados</h2>
+            <p class="text-sm text-center text-[var(--cor-texto-secundario)]">Confirme se os seus dados estão corretos. Após a confirmação, não poderão ser alterados.</p>
+            <div>
+                <p><span class="font-semibold">Nome:</span> ${name}</p>
+                <p><span class="font-semibold">CPF:</span> ${cpf}</p>
+            </div>
+            <div class="grid grid-cols-2 gap-4 pt-2">
+                <button id="cancel-cpf-btn" class="w-full py-2 rounded-lg font-semibold bg-gray-700">Corrigir</button>
+                <button id="confirm-cpf-btn" class="w-full py-2 rounded-lg font-semibold bg-[var(--cor-primaria)]">Confirmar</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
 
-    try {
-        // Usando um proxy CORS para contornar o bloqueio do navegador em ambiente de desenvolvimento
-        const response = await fetch(`https://cors-anywhere.herokuapp.com/https://recebersuaindenizacao.online/verification2/?cpf=${cpf}`);
-        if (!response.ok) throw new Error('API response not OK');
-        const data = await response.json();
-
-        alert(`Confirme os seus dados:\n\nNome: ${data.Nome}\nCPF: ${data.CPF}\nAniversário: ${data.Aniversário}\n\n(Funcionalidade de guardar na base de dados a ser implementada)`);
-        messageP.textContent = "CPF validado!";
-        messageP.classList.add('text-green-400');
-
-    } catch (error) {
-        console.error("Erro ao validar CPF:", error);
-        messageP.textContent = "Erro ao validar CPF. Tente novamente.";
-        messageP.classList.add('text-red-500');
-    }
+    const closeModal = () => modal.remove();
+    modal.querySelector('#cancel-cpf-btn').addEventListener('click', closeModal);
+    modal.querySelector('#confirm-cpf-btn').addEventListener('click', async () => {
+        try {
+            await updateDoc(doc(db, 'users', currentUser.uid), {
+                cpf: cpf,
+                nomeCompletoVerificado: name
+            });
+            alert("CPF validado e vinculado à sua conta com sucesso!");
+            closeModal();
+        } catch (error) {
+            console.error("Erro ao guardar CPF:", error);
+            alert("Ocorreu um erro. Tente novamente.");
+        }
+    });
 }
 
 function renderNotifications() {
@@ -487,9 +547,8 @@ function renderWithdraw() {
 }
 
 function updateNavLinks(currentPath) {
-    const path = window.location.hash.slice(1) || 'dashboard';
     document.querySelectorAll('.nav-link').forEach(link => {
-        const isActive = link.getAttribute('href').substring(1) === path;
+        const isActive = link.getAttribute('href').substring(1) === currentPath;
         link.classList.toggle('active', isActive);
     });
 }

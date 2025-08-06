@@ -38,7 +38,7 @@ async function loadPlatformSettings() {
         if (doc.exists()) {
             platformSettings = doc.data();
         } else {
-            platformSettings = { siteName: "Byte Capital", logoSvg: `<svg width="100" height="100" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><path fill="#FFD600" d="M403.5 512l108.5-108.5 108.5 108.5-108.5 108.5zM285 512l108.5-108.5L502 512l-108.5 108.5zM739 512L630.5 403.5 522 512l108.5 108.5zM512 204.8l108.5 108.5-108.5 108.5-108.5-108.5zM512 819.2L403.5 710.7l108.5-108.5 108.5 108.5z"/></svg>`, mainBgColor: "#000000", cardBgColor: "#1A1A1A", primaryColor: "#00E676", highlightColor: "#FFD600", primaryTextColor: "#FFFFFF", secondaryTextColor: "#757575" };
+            platformSettings = { siteName: "Byte Capital", logoSvg: `<svg width="100" height="100" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><path fill="#FFD600" d="M403.5 512l108.5-108.5 108.5 108.5-108.5 108.5z"/><path fill="#FFD600" d="M285 512l108.5-108.5L502 512l-108.5 108.5z"/><path fill="#FFD600" d="M739 512L630.5 403.5 522 512l108.5 108.5z"/><path fill="#FFD600" d="M512 204.8l108.5 108.5-108.5 108.5-108.5-108.5z"/><path fill="#FFD600" d="M512 819.2L403.5 710.7l108.5-108.5 108.5 108.5z"/></svg>`, mainBgColor: "#000000", cardBgColor: "#1A1A1A", primaryColor: "#00E676", highlightColor: "#FFD600", primaryTextColor: "#FFFFFF", secondaryTextColor: "#757575" };
         }
         applyPlatformSettings();
     });
@@ -101,7 +101,7 @@ const router = () => {
         case 'login': renderLogin(); break;
         case 'register': renderRegister(); break;
         case 'dashboard': renderDashboard(); break;
-        case 'operations': renderOperations(); break;
+        case 'wallet': renderWallet(); break;
         case 'support': renderSupport(); break;
         case 'indications': renderIndications(); break;
         case 'profile': renderProfile(); break;
@@ -233,7 +233,7 @@ function renderDashboard() {
         <div class="space-y-6">
             <div class="grid grid-cols-4 gap-4 text-center">
                 <a href="#indications" class="flex flex-col items-center space-y-1 text-[var(--cor-texto-secundario)]"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg><span class="text-xs">Indicações</span></a>
-                <a href="#operations" class="flex flex-col items-center space-y-1 text-[var(--cor-texto-secundario)]"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg><span class="text-xs">Operações</span></a>
+                <a href="#wallet" class="flex flex-col items-center space-y-1 text-[var(--cor-texto-secundario)]"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg><span class="text-xs">Carteira</span></a>
                 <a href="#support" class="flex flex-col items-center space-y-1 text-[var(--cor-texto-secundario)]"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="text-xs">Suporte</span></a>
                 <a href="#profile" class="flex flex-col items-center space-y-1 text-[var(--cor-texto-secundario)]"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span class="text-xs">Perfil</span></a>
             </div>
@@ -272,12 +272,12 @@ function renderInvestmentModal(assetName) {
             <button id="close-modal-btn" class="absolute top-4 right-4 text-2xl text-gray-500">&times;</button>
             <h2 class="text-xl font-bold text-center">Investir em ${assetName}</h2>
             <div class="grid grid-cols-3 gap-2">
-                <button class="value-btn bg-gray-700 py-2 rounded-lg">R$ 50</button>
-                <button class="value-btn bg-gray-700 py-2 rounded-lg">R$ 100</button>
-                <button class="value-btn bg-gray-700 py-2 rounded-lg">R$ 200</button>
+                <button class="value-btn bg-gray-700 py-2 rounded-lg">50 BTCC</button>
+                <button class="value-btn bg-gray-700 py-2 rounded-lg">100 BTCC</button>
+                <button class="value-btn bg-gray-700 py-2 rounded-lg">200 BTCC</button>
             </div>
-            <input type="number" id="invest-amount" placeholder="Digite o valor aqui" class="w-full px-4 py-3 text-white bg-gray-700 border border-[var(--cor-borda)] rounded-lg">
-            <p class="text-xs text-[var(--cor-texto-secundario)]">Valor mínimo permitido: R$ 10,00</p>
+            <input type="number" id="invest-amount" placeholder="Digite o valor em BTCC" class="w-full px-4 py-3 text-white bg-gray-700 border border-[var(--cor-borda)] rounded-lg">
+            <p class="text-xs text-[var(--cor-texto-secundario)]">Saldo BTCC disponível: ${userData.saldoBTCC.toFixed(2)}</p>
             <button id="invest-now-btn" class="w-full py-3 rounded-lg font-semibold bg-gradient-to-r from-[var(--cor-primaria)] to-green-400">Investir Agora</button>
             <p id="modal-error" class="text-red-500 text-sm text-center h-4"></p>
         </div>`;
@@ -289,7 +289,7 @@ function renderInvestmentModal(assetName) {
     modal.querySelector('#close-modal-btn').addEventListener('click', closeModal);
     modal.querySelectorAll('.value-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            investAmountInput.value = btn.textContent.replace('R$ ', '');
+            investAmountInput.value = btn.textContent.replace(' BTCC', '');
         });
     });
 
@@ -297,24 +297,24 @@ function renderInvestmentModal(assetName) {
         const amount = parseFloat(investAmountInput.value);
         const errorP = modal.querySelector('#modal-error');
         errorP.textContent = '';
-        if (isNaN(amount) || amount < 10) {
-            errorP.textContent = "Valor mínimo é R$ 10,00.";
+        if (isNaN(amount) || amount <= 0) {
+            errorP.textContent = "Valor inválido.";
             return;
         }
-        if (userData.saldoBRLC < amount) {
-            errorP.innerHTML = `Saldo insuficiente. <a href="#deposit" id="go-to-deposit" class="underline">Depositar</a>`;
-            modal.querySelector('#go-to-deposit').addEventListener('click', (e) => {
+        if (userData.saldoBTCC < amount) {
+            errorP.innerHTML = `Saldo BTCC insuficiente. <a href="#wallet" id="go-to-wallet" class="underline">Converter</a>`;
+            modal.querySelector('#go-to-wallet').addEventListener('click', (e) => {
                 e.preventDefault();
                 closeModal();
-                window.location.hash = 'deposit';
+                window.location.hash = 'wallet';
             });
             return;
         }
         try {
             await updateDoc(doc(db, 'users', currentUser.uid), {
-                saldoBRLC: increment(-amount)
+                saldoBTCC: increment(-amount)
             });
-            alert(`Investimento de ${formatCurrency(amount, 'BRLC')} em ${assetName} realizado com sucesso!`);
+            alert(`Investimento de ${formatCurrency(amount, 'BTCC')} em ${assetName} realizado com sucesso!`);
             closeModal();
         } catch (error) {
             console.error("Erro ao investir:", error);
@@ -323,44 +323,47 @@ function renderInvestmentModal(assetName) {
     });
 }
 
-function renderOperations() {
-    const page = document.getElementById('page-operations');
+function renderWallet() {
+    const page = document.getElementById('page-operations'); // A página de operações agora é a carteira
     page.innerHTML = `<div class="space-y-6">
-        <h1 class="text-2xl font-bold">Cotação BTCC</h1>
-        <div class="bg-[var(--cor-fundo-cartao)] p-4 rounded-2xl h-64">
-            <canvas id="operations-chart"></canvas>
+        <h1 class="text-2xl font-bold">Carteira / Exchange</h1>
+        <div class="bg-[var(--cor-fundo-cartao)] p-5 rounded-2xl space-y-4">
+            <h2 class="font-bold">Converter Moedas</h2>
+            <div>
+                <label class="text-sm text-[var(--cor-texto-secundario)]">De BRLC para BTCC</label>
+                <div class="flex items-center mt-1"><input type="number" id="brlc-to-btcc" placeholder="0.00" class="w-full p-2 bg-gray-700 rounded-l-lg"><button id="convert-to-btcc" class="bg-[var(--cor-primaria)] p-2 rounded-r-lg font-semibold">Converter</button></div>
+            </div>
+            <div>
+                <label class="text-sm text-[var(--cor-texto-secundario)]">De BTCC para BRLC</label>
+                <div class="flex items-center mt-1"><input type="number" id="btcc-to-brlc" placeholder="0.00" class="w-full p-2 bg-gray-700 rounded-l-lg"><button id="convert-to-brlc" class="bg-[var(--cor-primaria)] p-2 rounded-r-lg font-semibold">Converter</button></div>
+            </div>
         </div>
-        <div class="text-center text-[var(--cor-texto-secundario)]">Histórico de transações em tempo real (simulado).</div>
     </div>`;
-    renderOperationsChart();
-}
 
-function renderOperationsChart() {
-    const ctx = document.getElementById('operations-chart')?.getContext('2d');
-    if (!ctx) return;
-    if (activeChart) activeChart.destroy();
-    
-    const labels = Array.from({length: btccPriceHistory.length}, (_, i) => i);
-
-    activeChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Cotação BTCC', data: btccPriceHistory,
-                borderColor: 'var(--cor-destaque)', tension: 0.4,
-            }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    page.querySelector('#convert-to-btcc').addEventListener('click', async () => {
+        const amount = parseFloat(page.querySelector('#brlc-to-btcc').value);
+        if(isNaN(amount) || amount <= 0 || userData.saldoBRLC < amount) {
+            alert("Valor inválido ou saldo BRLC insuficiente.");
+            return;
+        }
+        await updateDoc(doc(db, 'users', currentUser.uid), {
+            saldoBRLC: increment(-amount),
+            saldoBTCC: increment(amount) // Conversão 1:1
+        });
+        alert("Conversão realizada com sucesso!");
     });
-}
-
-function updateOperationsChart() {
-    if(activeChart) {
-        activeChart.data.labels = Array.from({length: btccPriceHistory.length}, (_, i) => i);
-        activeChart.data.datasets[0].data = btccPriceHistory;
-        activeChart.update('none');
-    }
+    page.querySelector('#convert-to-brlc').addEventListener('click', async () => {
+        const amount = parseFloat(page.querySelector('#btcc-to-brlc').value);
+        if(isNaN(amount) || amount <= 0 || userData.saldoBTCC < amount) {
+            alert("Valor inválido ou saldo BTCC insuficiente.");
+            return;
+        }
+        await updateDoc(doc(db, 'users', currentUser.uid), {
+            saldoBTCC: increment(-amount),
+            saldoBRLC: increment(amount) // Conversão 1:1
+        });
+        alert("Conversão realizada com sucesso!");
+    });
 }
 
 function renderSupport() {
@@ -373,12 +376,22 @@ function renderSupport() {
         </div>`;
 }
 
-function renderIndications() {
+async function renderIndications() {
     const page = document.getElementById('page-indications');
     const nextLevel = "Bronze";
-    const currentAffiliates = userData.indicadosDiretosAtivos || 0;
+    const currentAffiliates = userData.indicados ? userData.indicados.length : 0;
     const requiredAffiliates = 10;
     const progress = (currentAffiliates / requiredAffiliates) * 100;
+
+    let referredListHTML = '<p class="text-sm text-[var(--cor-texto-secundario)]">Ainda não tem convidados.</p>';
+    if (userData.indicados && userData.indicados.length > 0) {
+        referredListHTML = userData.indicados.map(ref => `
+            <div class="flex justify-between items-center text-sm">
+                <span>${ref.username}</span>
+                <span class="${ref.hasInvested ? 'text-green-400' : 'text-yellow-400'}">${ref.hasInvested ? 'Ativo' : 'Pendente'}</span>
+            </div>
+        `).join('');
+    }
 
     page.innerHTML = `
         <div class="space-y-6">
@@ -402,6 +415,10 @@ function renderIndications() {
                     <input id="ref-link-input" type="text" readonly value="${window.location.origin}${window.location.pathname}#register?ref=${currentUser.uid}" class="bg-transparent w-full text-white focus:outline-none text-sm">
                     <button id="copy-link-btn" class="bg-[var(--cor-primaria)] px-4 py-1.5 rounded-md font-semibold text-sm">Copiar</button>
                 </div>
+            </div>
+            <div class="bg-[var(--cor-fundo-cartao)] p-5 rounded-2xl space-y-2">
+                <h2 class="font-bold">Os seus Convidados</h2>
+                ${referredListHTML}
             </div>
         </div>`;
     
@@ -495,12 +512,93 @@ function renderNotifications() {
 
 function renderDeposit() {
     const page = document.getElementById('page-deposit');
-    page.innerHTML = `<div class="space-y-6"><h1 class="text-2xl font-bold">Depositar</h1><p>Página de depósito em construção.</p></div>`;
+    page.innerHTML = `<div class="space-y-6">
+        <h1 class="text-2xl font-bold">Realizar Depósito</h1>
+        <div class="bg-[var(--cor-fundo-cartao)] p-5 rounded-2xl space-y-4">
+            <p class="text-center text-[var(--cor-texto-secundario)]">Para depositar, faça um PIX para a chave abaixo e clique em "Já Paguei".</p>
+            <div class="text-center bg-gray-900 p-3 rounded-lg">
+                <p class="font-mono text-[var(--cor-destaque)]">${platformSettings.pixKey || 'Chave não configurada'}</p>
+            </div>
+            <form id="deposit-form">
+                <input type="number" id="deposit-amount" placeholder="Valor do depósito (ex: 100.00)" required class="w-full px-4 py-3 text-white bg-gray-700 border border-[var(--cor-borda)] rounded-lg">
+                <button type="submit" class="mt-4 w-full py-3 rounded-lg font-semibold bg-[var(--cor-primaria)]">Já Paguei</button>
+            </form>
+            <p id="deposit-message" class="text-center text-sm h-4"></p>
+        </div>
+    </div>`;
+    page.querySelector('#deposit-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const amount = parseFloat(page.querySelector('#deposit-amount').value);
+        const messageP = page.querySelector('#deposit-message');
+        if (isNaN(amount) || amount <= 0) {
+            messageP.textContent = "Por favor, insira um valor válido.";
+            return;
+        }
+        try {
+            await addDoc(collection(db, 'deposit_requests'), {
+                uid: currentUser.uid,
+                userName: userData.name,
+                amount: amount,
+                status: 'pendente',
+                createdAt: serverTimestamp()
+            });
+            await updateDoc(doc(db, 'users', currentUser.uid), {
+                pendingBalanceBRL: increment(amount)
+            });
+            messageP.textContent = "Pedido de depósito enviado! Aguarde a aprovação.";
+            messageP.classList.add('text-green-400');
+        } catch (error) {
+            console.error("Erro ao criar pedido de depósito:", error);
+            messageP.textContent = "Erro ao enviar o pedido.";
+        }
+    });
 }
 
 function renderWithdraw() {
     const page = document.getElementById('page-withdraw');
-    page.innerHTML = `<div class="space-y-6"><h1 class="text-2xl font-bold">Sacar</h1><p>Página de saque em construção.</p></div>`;
+    page.innerHTML = `<div class="space-y-6">
+        <h1 class="text-2xl font-bold">Sacar</h1>
+        <div class="bg-[var(--cor-fundo-cartao)] p-5 rounded-2xl space-y-4">
+            <p class="text-sm text-[var(--cor-texto-secundario)]">Saldo disponível para saque</p>
+            <p class="text-3xl font-bold">${formatCurrency(userData.saldoBRLC, 'BRLC')}</p>
+            <form id="withdraw-form">
+                <input type="number" id="withdraw-amount" placeholder="Valor do saque" required class="w-full px-4 py-3 text-white bg-gray-700 border border-[var(--cor-borda)] rounded-lg">
+                <button type="submit" class="mt-4 w-full py-3 rounded-lg font-semibold bg-[var(--cor-primaria)]">Solicitar Saque</button>
+            </form>
+            <p id="withdraw-message" class="text-center text-sm h-4"></p>
+        </div>
+    </div>`;
+    
+    page.querySelector('#withdraw-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const amount = parseFloat(page.querySelector('#withdraw-amount').value);
+        const messageP = page.querySelector('#withdraw-message');
+        if (isNaN(amount) || amount <= 0) {
+            messageP.textContent = "Valor inválido.";
+            return;
+        }
+        if (userData.saldoBRLC < amount) {
+            messageP.textContent = "Saldo insuficiente.";
+            return;
+        }
+        try {
+            await addDoc(collection(db, 'withdraw_requests'), {
+                uid: currentUser.uid,
+                userName: userData.name,
+                amount: amount,
+                status: 'pendente',
+                createdAt: serverTimestamp()
+            });
+            await updateDoc(doc(db, 'users', currentUser.uid), {
+                saldoBRLC: increment(-amount)
+            });
+            messageP.textContent = "Pedido de saque enviado com sucesso!";
+            messageP.classList.add('text-green-400');
+        } catch (error) {
+            console.error("Erro ao criar pedido de saque:", error);
+            messageP.textContent = "Erro ao enviar o pedido.";
+        }
+    });
 }
 
 function updateNavLinks(currentPath) {
